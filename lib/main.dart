@@ -34,6 +34,9 @@ class DraggableFloatingButton extends StatefulWidget {
 class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
   Offset position = const Offset(100, 100);
   bool isSafeAreaUsed = false;
+  bool isButtonVisible = true;
+  IconData icon = Icons.visibility_off_outlined;
+  String label = "隱藏浮動按鍵";
 
   //確認SafeArea是否有使用
   void checkForSafeArea(BuildContext context) {
@@ -76,37 +79,68 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
         Positioned(
           left: position.dx,
           top: position.dy,
-          child: Draggable(
-            feedback: const Opacity(
-              opacity: 0.3,
+          child: Visibility(
+            visible: isButtonVisible,
+            child: Draggable(
+              feedback: const Opacity(
+                opacity: 0.3,
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: ImageIcon(
+                    AssetImage("assets/images/drag-and-drop.png"),
+                    size: 36,
+                  ),
+                ),
+              ),
+              childWhenDragging: Container(),
+              onDragEnd: (details) {
+                setState(() {
+                  //回傳的Offset有把AppBar的height加上了，必須把它減回來
+                  position = details.offset
+                      .translate(0, -(appBarHeight + statusBarHeight));
+                  debugPrint("position -> $position");
+                });
+              },
               child: FloatingActionButton(
-                onPressed: null,
-                child: ImageIcon(
+                onPressed: () {
+                  debugPrint(
+                      "Click get appBarHeight -> ${appBarHeight + statusBarHeight}");
+                },
+                child: const ImageIcon(
                   AssetImage("assets/images/drag-and-drop.png"),
                   size: 36,
                 ),
               ),
             ),
-            childWhenDragging: Container(),
-            onDragEnd: (details) {
-              setState(() {
-                //回傳的Offset有把AppBar的height加上了，必須把它減回來
-                position = details.offset
-                    .translate(0, -(appBarHeight + statusBarHeight));
-                debugPrint("position -> $position");
-              });
-            },
-            child: FloatingActionButton(
-              onPressed: () {
-                debugPrint(
-                    "Click get appBarHeight -> ${appBarHeight + statusBarHeight}");
-              },
-              child: const ImageIcon(
-                AssetImage("assets/images/drag-and-drop.png"),
-                size: 36,
+          ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Center(
+              child: ElevatedButton.icon(
+                icon: Icon(icon),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orangeAccent
+                ),
+                onPressed: () {
+                  setState(() {
+                    isButtonVisible = !isButtonVisible;
+                    if(isButtonVisible) {
+                      icon = Icons.visibility_off_rounded;
+                      label = "隱藏浮動按鍵";
+                    }
+                    else {
+                      icon = Icons.visibility_outlined;
+                      label = "顯示浮動按鍵";
+                    }
+                  });
+                },
+                label: Text(label),
               ),
             ),
-          ),
+            const SizedBox(height: 30,),
+          ],
         ),
       ],
     );
