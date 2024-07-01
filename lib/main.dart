@@ -37,7 +37,9 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
   bool isButtonVisible = true;
   IconData icon = Icons.visibility_off_outlined;
   String label = "隱藏浮動按鍵";
-
+  double appBarHeight = 0;
+  double statusBarHeight = 0;
+  
   //確認SafeArea是否有使用
   void checkForSafeArea(BuildContext context) {
     context.visitAncestorElements((element) {
@@ -52,28 +54,24 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
   @override
   void initState() {
     // TODO: implement initState
+    appBarHeight = Scaffold.of(context).appBarMaxHeight ?? 0;
+    debugPrint("appBarHeight -> $appBarHeight");
+
     checkForSafeArea(context);
     debugPrint("isSafeAreaUsed -> $isSafeAreaUsed");
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    double appBarHeight = Scaffold.of(context).appBarMaxHeight ?? 0;
-    debugPrint(
-        "appBarHeight -> $appBarHeight");
-    double statusBarHeight = 0;
-
     if (isSafeAreaUsed) {
       //MediaQueryData.fromView(window).padding.top是記錄Status Bar的高度
       debugPrint(
           "MediaQueryData.fromWindow(window).padding -> ${MediaQueryData.fromView(window).padding}");
       statusBarHeight = MediaQueryData.fromView(window).padding.top;
     }
-
     debugPrint("statusBarHeight -> $statusBarHeight");
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Positioned(
