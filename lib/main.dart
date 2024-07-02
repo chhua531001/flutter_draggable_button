@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,6 +16,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text('Draggable Floating Button'),
         ),
         body: const DraggableFloatingButton(),
@@ -64,8 +64,8 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
     if (isSafeAreaUsed) {
       //MediaQueryData.fromView(window).padding.top是記錄Status Bar的高度
       debugPrint(
-          "MediaQueryData.fromWindow(window).padding -> ${MediaQueryData.fromView(window).padding}");
-      statusBarHeight = MediaQueryData.fromView(window).padding.top;
+          "MediaQueryData.fromWindow(WidgetsBinding.instance.platformDispatcher.views.single).padding -> ${MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.single).padding}");
+      statusBarHeight = MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.single).padding.top;
     }
     debugPrint("statusBarHeight -> $statusBarHeight");
 
@@ -99,6 +99,7 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
                   Offset original = position;
                   position = details.offset
                       .translate(0, -(appBarHeight + statusBarHeight));
+                  debugPrint("計算完的position -> $position");
                   if (position.dy < 0) {
                     position = original;
                     Fluttertoast.showToast(
@@ -107,7 +108,7 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
                       textColor: Colors.white,
                     );
                   }
-                  debugPrint("position -> $position");
+                  debugPrint("最後實際的position -> $position");
                 });
               },
               child: FloatingActionButton(
